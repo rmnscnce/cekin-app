@@ -24,25 +24,6 @@ export default function Guest({ header, children }) {
                 </NavLink>
               </div>
             </div>
-
-            <div className="flex">
-              <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                <NavLink
-                  href={route("register")}
-                  active={route().current("register")}
-                >
-                  <div className="font-bold text-md">Register</div>
-                </NavLink>
-              </div>
-              <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                <NavLink
-                  href={route("login")}
-                  active={route().current("login")}
-                >
-                  <div className="font-bold text-md">Login</div>
-                </NavLink>
-              </div>
-            </div>
           </div>
         </div>
       </nav>

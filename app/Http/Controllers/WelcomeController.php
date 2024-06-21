@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\OnlineWeather;
+use App\Models\NearbyPlaces;
 use RakibDevs\Weather\Weather;
 
 class WelcomeController extends Controller
@@ -20,13 +22,31 @@ class WelcomeController extends Controller
             "Paris" => "https://cdn1.sisiplus.co.id/media/sisiplus/asset/uploads/artikel/g2OEbKl2aTEIp1x5hFNYEE9ad615uVenBexDAcVW.jpg",
 
         );
+        $coords = array(
+            "Jakarta" => OnlineWeather::findCoordinates("Jakarta")[0],
+            "Tokyo" => OnlineWeather::findCoordinates("Tokyo")[0],
+            "Dubai" => OnlineWeather::findCoordinates("Dubai")[0],
+            "London" => OnlineWeather::findCoordinates("London")[0],
+            "Berlin" => OnlineWeather::findCoordinates("Berlin")[0],
+            "Chicago" => OnlineWeather::findCoordinates("Chicago")[0],
+            "Paris" => OnlineWeather::findCoordinates("Paris")[0],
+        );
         $keys = array_keys($data); // Get keys of the $data array
         shuffle($keys); // Shuffle the keys
         $randomCity = $keys[0]; // Get the first key after shuffling
         $selectedImage = $data[$randomCity]; // Get the corresponding value for the selected key
-        $weatherDashboard = $wt->getCurrentByCity($randomCity);
-        $icon = $weatherDashboard->weather[0]->icon;
+        $wt = new OnlineWeather($coords[$randomCity]['latitude'], $coords[$randomCity]['longitude']);
+        $weatherDashboard = array(
+            "location" => $wt->getLocation(),
+            "curr_temp" => $wt->getCurrTemp(),
+            "wind_speed" => $wt->getWindSpeed(),
+            "condition" => $wt->getCondition(),
+        );
+        // $icon = $weatherDashboard->weather[0]->icon;
+        $icon = "50d";
         $weatherIcon = "https://openweathermap.org/img/wn/" . $icon . "@2x.png";
+        $np = new NearbyPlaces($coords[$randomCity]['latitude'], $coords[$randomCity]['longitude']);
+        $nearbyPlaces = $np->getPlaces();
         return inertia(
             'Welcome',
             compact(
@@ -34,7 +54,8 @@ class WelcomeController extends Controller
                 'weatherDashboard',
                 'weatherIcon',
                 'randomCity',
-                'selectedImage'
+                'selectedImage',
+                'nearbyPlaces'
             )
         );
     }

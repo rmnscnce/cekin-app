@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use RakibDevs\Weather\Weather;
 use Inertia\Inertia;
+use App\Models\OnlineWeather;
 
 class DashboardController extends Controller
 {
@@ -32,6 +33,26 @@ class DashboardController extends Controller
             "Bogor" => "https://i.pinimg.com/736x/a0/64/4a/a0644a22e9d6dd8a6f84e4d59dd5e6ce.jpg"
         );
 
+        $coords = array(
+            "Jakarta" => ["-6.2088","106.8456"], // latitude, longitude
+            "Tokyo" => ["35.6895","139.6917"],
+            "Dubai" => ["25.276987","55.296249"],
+            "London" => ["51.5074","0.1278"],
+            "Berlin" => ["52.5200","13.4050"],
+            "Chicago" => ["41.8781","87.6298"],
+            "Paris" => ["48.8566","2.3522"],
+            "Bali" => ["-8.3405","115.0920"],
+            "New York" => ["40.7128","74.0060"],
+            "Sydney" => ["-33.8688","151.2093"],
+            "Bandung" => ["-6.9175","107.6191"],
+            "Washington" => ["38.9072","77.0369"],
+            "Singapore" => ["1.3521","103.8198"],
+            "Cairo" => ["30.0444","31.2357"],
+            "Hong Kong" => ["22.3193","114.1694"],
+            "Malang" => ["-7.9778","112.6347"],
+            "Bogor" => ["-6.5946","106.7892"]
+        );
+
         $defaultImage = "https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?ixlib=rb-4.0.3";
         $city = $request->input('city');
 
@@ -49,8 +70,16 @@ class DashboardController extends Controller
             $selectedImage = $defaultImage;
         }
 
-        $weatherDashboard = $wt->getCurrentByCity($randomCity);
-        $icon = $weatherDashboard->weather[0]->icon;
+        // $weatherDashboard = $wt->getCurrentByCity($randomCity);
+        $wt = new OnlineWeather($coords[$randomCity][0], $coords[$randomCity][1]);
+        $weatherDashboard = array(
+            "location" => $wt->getLocation(),
+            "curr_temp" => $wt->getCurrTemp(),
+            "wind_speed" => $wt->getWindSpeed(),
+            "condition" => $wt->getCondition(),
+        );
+        // $icon = $weatherDashboard->weather[0]->icon;
+        $icon = "50d";
         $weatherIcon = "https://openweathermap.org/img/wn/" . $icon . "@2x.png";
 
         return Inertia::render('Dashboard', compact(
